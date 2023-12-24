@@ -6,7 +6,7 @@ export default function Test() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const eventSource = new EventSource('https://next-simple-sse.vercel.app:3005/events');
+    const eventSource = new EventSource('https://next-simple-sse.vercel.app:5000/events');
     eventSource.onmessage = (event) => {
       const message = event.data;
       setMessages((prevMessages) => [...prevMessages, message]);
