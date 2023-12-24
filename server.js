@@ -8,7 +8,7 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const server = express();
-  const port = process.env.PORT || 3005;
+  const port = process.env.PORT || 3000;
 
   // Use the cors middleware to enable CORS for your SSE endpoint
   server.use(cors());
