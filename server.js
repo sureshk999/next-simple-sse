@@ -1,44 +1,56 @@
 const express = require('express');
-const app = express();
-const port = 3005;
-
-//need to npm install cors
+const next = require('next');
 const cors = require('cors'); // Import the cors package
 
-// Serve static files from the 'public' directory
-app.use(express.static('public'));
+const dev = process.env.NODE_ENV !== 'production';
+const app = next({ dev });
+const handle = app.getRequestHandler();
 
-// Regular route for the homepage
-app.get('/', (req, res) => {
-  res.send('Hello World! Navigate to /events for SSE.');
-});
+app.prepare().then(() => {
+  const server = express();
+  const port = process.env.PORT || 3005;
 
-// Use the cors middleware to enable CORS for your SSE endpoint
-app.use(cors());
+  // Use the cors middleware to enable CORS for your SSE endpoint
+  server.use(cors());
 
-// SSE route
-app.get('/events', function(req, res) {
-  // Set necessary headers for SSE
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive'
+  // Serve static files from the 'public' directory
+  server.use(express.static('public'));
+
+  // Regular route for the homepage
+  server.get('/', (req, res) => {
+    return app.render(req, res, '/');
   });
 
-  // Send a message every second
-  const intervalId = setInterval(function() {
-    const message = `data: This SSE test is working just fine! The server time is ${new Date().toLocaleTimeString()}\n\n`;
-    res.write(message);
-  }, 1000);
+  // SSE route
+  server.get('/events', function(req, res) {
+    // Set necessary headers for SSE
+    res.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive'
+    });
 
-  // Clean up when connection is closed
-  req.on('close', function() {
-    clearInterval(intervalId);
+    // Send a message every second
+    const intervalId = setInterval(function() {
+      const message = `data: This SSE test is working just fine! The server time is ${new Date().toLocaleTimeString()}\n\n and the server is running on port ${port}`;
+      res.write(message);
+    }, 1000);
+
+    // Clean up when connection is closed
+    req.on('close', function() {
+      clearInterval(intervalId);
+    });
   });
-});
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  // Handle all other routes using Next.js
+  server.all('*', (req, res) => {
+    return handle(req, res);
+  });
+
+  // Start the Express server
+  server.listen(port, (err) => {
+    if (err) throw err;
+    console.log(`Server running at http://localhost:${port}`);
+  });
 });
 
