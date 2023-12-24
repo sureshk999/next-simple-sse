@@ -1,0 +1,19 @@
+{
+    "functions": {
+      "api/**/*.js": {
+        "runtime": "nodejs14.x",
+        "memory": 512
+      },
+      "package.json": {
+        "engines": {
+          "node": "14.x"
+        },
+        "buildCommand": "npm run build"
+      },
+      "server.js": {
+        "runtime": "nodejs14.x",
+        "memory": 512
+      }
+    }
+  }
+  
