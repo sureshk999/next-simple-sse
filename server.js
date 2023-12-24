@@ -50,7 +50,7 @@ app.prepare().then(() => {
   // Start the Express server
   server.listen(port, (err) => {
     if (err) throw err;
-    console.log(`Server running at http://localhost:${port}`);
+    console.log(`Server running at https://next-simple-sse.vercel.app:${port}`);
   });
 });
 
